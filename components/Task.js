@@ -35,7 +35,7 @@ const Task = () => {
       const matchingTodos = todos.filter((todo) => todo.ip === wifiIP);
 
       if (matchingTodos.length > 0) {
-        Alert.alert('Wi-Fi IP Match', 'Wi-Fi IP와 일치하는 할 일이 있습니다.');
+        Alert.alert('Match', '할 일이 있지않나요?');
       }
     };
 
@@ -47,7 +47,7 @@ const Task = () => {
         const newWifiIP = state.details && state.details.ipAddress;
 
         if (newWifiIP !== wifiIp) {
-          console.log('Wi-Fi IP Changed:', newWifiIP);
+          console.log('Wi-Fi IP 변경 :', newWifiIP);
 
           try {
             const fcmToken = await messaging().getToken();
@@ -58,7 +58,7 @@ const Task = () => {
               },
             });
           } catch (error) {
-            console.error('FCM Message Sending Error:', error);
+            console.error('FCM 에러 :', error);
           }
 
           setWifiIp(newWifiIP);
@@ -75,7 +75,7 @@ const Task = () => {
   const handleCheckWifiIp = async () => {
     try {
       await Clipboard.setString(wifiIp);
-      console.log('Wi-Fi IP Copied:', wifiIp);
+      console.log('Wi-Fi IP 복사 성공 :', wifiIp);
     } catch (e) {
       console.error('Wi-Fi IP 복사 중 오류 발생:', e);
     }
