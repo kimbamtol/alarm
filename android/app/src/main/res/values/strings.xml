@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">alarm</string>
+    <string name="rn_push_notification_channel_id">notify</string>
 </resources>
