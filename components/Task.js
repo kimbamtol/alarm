@@ -6,6 +6,7 @@ import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } 
 import NetInfo from '@react-native-community/netinfo';
 import Clipboard from '@react-native-clipboard/clipboard';
 import messaging from '@react-native-firebase/messaging';
+import PushNotification from 'react-native-push-notification';
 
 const Task = () => {
   const [todos, setTodos] = useState([]);
@@ -46,21 +47,38 @@ const Task = () => {
         console.log('Connected to Wi-Fi:', state.details);
         const newWifiIP = state.details && state.details.ipAddress;
 
+
         if (newWifiIP !== wifiIp) {
           console.log('Wi-Fi IP 변경 :', newWifiIP);
 
           try {
             const fcmToken = await messaging().getToken();
-            await messaging().sendMessage({
-              to: fcmToken,
-              data: {
-                wifiIP: newWifiIP,
-              },
-            });
+
+            // 일치하는 할일 아이템 찾기
+            const matchingTodos = todos.filter((todo) => todo.ip === newWifiIP);
+
+            // 일치하는 할일이 있다면 알림 전송
+            if (matchingTodos.length > 0) {
+              const todoText = matchingTodos[0].text; // 여기에서는 첫 번째 일치하는 할일의 텍스트를 가져옴
+              await messaging().sendMessage({
+                to: fcmToken,
+                data: {
+                  wifiIP: newWifiIP,
+                  todoText: todoText,
+                },
+              });
+
+              // TODO: 실제로 알림을 사용자에게 전달하는 로직 추가
+              PushNotification.localNotification({
+                message: `할 일 알림 : ${todoText}`,
+              });
+              // 이 부분에는 React Native에서 제공하는 알림 라이브러리 또는 푸시 알림 서비스를 사용하는 로직을 추가해야 합니다.
+              // 예를 들어, react-native-notifications, react-native-push-notification 등을 사용할 수 있습니다.
+              // 알림을 전송하는 방식은 사용하는 라이브러리에 따라 다를 수 있습니다.
+            }
           } catch (error) {
             console.error('FCM 에러 :', error);
           }
-
           setWifiIp(newWifiIP);
         }
       }
